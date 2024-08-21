@@ -1,74 +1,73 @@
-from IPython.display import HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video with Skip and Countdown</title>
+    <style>
+        #videoContainer {
+            position: relative;
+            width: 640px;
+            height: 360px;
+            margin: 0 auto;
+        }
+        #skipBtn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            cursor: pointer;
+            display: none;
+            border-radius: 10px;
+            font-family: 'Arial', 'Helvetica', 'sans-serif';
+        }
+        #countdown {
+            position: absolute;
+            bottom: 20px;
+            right: 100px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            font-family: 'Arial', 'Helvetica', 'sans-serif';
+        }
+    </style>
+</head>
+<body>
 
-html_code = """
-<style> 
-  #skipBtn { 
-    position: absolute; 
-    bottom: 55px; 
-    right: 20px; 
-    padding: 13px; 
-    background: rgba(0, 0, 0, 0.5); 
-    color: white; 
-    cursor: pointer; 
-    display: none; 
-    border-radius: 10px; /* 角を丸くする */
-    font-family: 'Arial', 'Helvetica', 'sans-serif'; /* ゴシック体のフォントを設定 */
-  } 
+<div id="videoContainer">
+    <video id="videoPlayer" width="640" height="360" autoplay>
+        <source src="your-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="countdown">5</div>
+    <div id="skipBtn" onclick="skipAd()">Skip Ad</div>
+</div>
 
-  #countdown { 
-    position: absolute; 
-    bottom: 55px; 
-    right: 20px; 
-    color: white; 
-    background: rgba(0, 0, 0, 0.7); 
-    padding: 10px; 
-  } 
+<script>
+    const videoPlayer = document.getElementById('videoPlayer');
+    const skipBtn = document.getElementById('skipBtn');
+    const countdown = document.getElementById('countdown');
+    let counter = 5; // カウントダウン秒数を設定
 
-  #videoContainer { 
-    position: relative; 
-    width: 640px; 
-    height: 360px; 
-  } 
-</style> 
+    // カウントダウンタイマー
+    const countdownInterval = setInterval(() => {
+        counter--;
+        countdown.textContent = counter;
+        if (counter <= 0) {
+            skipBtn.style.display = 'block'; // スキップボタンを表示
+            countdown.style.display = 'none'; // カウントダウンを非表示
+            clearInterval(countdownInterval);
+        }
+    }, 1000);
 
-<div id="videoContainer"> 
-  <iframe id="videoFrame" src="https://drive.google.com/file/d/1RH6TnddJzL528hE771fLaoH9uXS4E-lm/preview" width="640" height="360" allow="autoplay"></iframe> 
-  <div id="countdown"></div> 
-  <div id="skipBtn" onclick="skipAd()">スキップ</div> 
-</div> 
-
-<script> 
-  const iframe = document.getElementById('videoFrame'); 
-  const skipBtn = document.getElementById('skipBtn'); 
-  const countdown = document.getElementById('countdown'); 
-
-  let counter = 3; // スキップまでの時間（秒） 
-  let countdownInterval; 
-
-  function startCountdown() { 
-    countdown.innerText = counter; 
-    countdownInterval = setInterval(() => { 
-      counter--; 
-      if (counter > 0) { 
-        countdown.innerText = counter; 
-      } else { 
-        countdown.innerText = ''; 
-        skipBtn.style.display = 'block'; 
-        clearInterval(countdownInterval); 
-      } 
-    }, 1000); 
-  } 
-
-  iframe.onload = function() { 
-    startCountdown(); 
-  }; 
-
-  function skipAd() { 
-    const iframeWindow = iframe.contentWindow; 
-    iframeWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*'); 
-    skipBtn.style.display = 'none'; 
-  } 
+    function skipAd() {
+        videoPlayer.pause();  // 動画を停止する
+        videoPlayer.currentTime = videoPlayer.duration;  // 動画の再生時間を終わりに設定
+        skipBtn.style.display = 'none';  // スキップボタンを非表示にする
+    }
 </script>
-"""
 
-HTML(html_code)
+</body>
+</html>
